@@ -1,8 +1,5 @@
 import { initialCards } from "./cards.js";
 
-
-
-
 // @todo: Темплейт карточки
 
 const cardTemplate = document.querySelector("#card-template").content; 
@@ -23,6 +20,8 @@ function createCard(cardDataName, cardDataLink) {
     const newCardImageElement = newCardElement.querySelector(".card__image");
     const newCardTitleElement = newCardElement.querySelector(".card__title"); 
     const newCardLikeButtonElement = newCardElement.querySelector(".card__like-button");
+    const newDeleteButtonElement = newCardElement.querySelector(".card__delete-button");
+    const imagePopup = document.querySelector(".popup_type_image");
 
     newCardImageElement.src = cardDataLink;
     newCardImageElement.alt = cardDataName;
@@ -32,16 +31,21 @@ function createCard(cardDataName, cardDataLink) {
         evt.target.classList.toggle('card__like-button_is-active')
     })
 
+    newDeleteButtonElement.addEventListener("click", evt => deleteCard(newDeleteButtonElement));
+
+    newCardImageElement.addEventListener("click", (evt) => {
+        imagePopup.querySelector(".popup__image").src = cardDataLink;
+        imagePopup.querySelector(".popup__caption").textContent = cardDataName;
+        openModal(imagePopup);
+    })
+
     return newCardElement;
 }
-
-
 
 
 // Попапы
 const profilePopup = document.querySelector(".popup_type_edit");
 const cardPopup = document.querySelector(".popup_type_new-card");
-const imagePopup = document.querySelector(".popup_type_image");
 
 // Кнопки
 const profilePopupButton = document.querySelector(".profile__edit-button");
@@ -71,9 +75,6 @@ const jobInput = profilePopup.querySelector(".popup__input_type_description");//
 
 nameInput.value = document.querySelector(".profile__title").textContent;
 jobInput.value = document.querySelector(".profile__description").textContent;
-
-console.log(nameInput);
-
 
 const cardFromElement = cardPopup.querySelector(".popup__form");
 
@@ -127,8 +128,8 @@ initialCards.forEach(cardData => {
 
 // @todo: Функция удаления карточки
 
-function deleteCard() {
-
+function deleteCard(deleteButton) {
+    deleteButton.closest(".card").remove();
 }
 
 // @todo: Вывести карточки на страницу
