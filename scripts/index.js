@@ -121,9 +121,7 @@ function handleCardFormSubmit(evt) {
 profileFormElement.addEventListener("submit", handleProfileFormSubmit);
 cardFromElement.addEventListener("submit", handleCardFormSubmit)
 
-initialCards.forEach(cardData => {
-    placesList.append(createCard(cardData["name"], cardData["link"]));
-})
+
 
 
 // @todo: Функция удаления карточки
@@ -135,5 +133,9 @@ function deleteCard(deleteButton) {
 // @todo: Вывести карточки на страницу
 
 function printCard() {
-
+    initialCards.forEach(cardData => {
+        placesList.append(createCard(cardData["name"], cardData["link"]));
+    })
 }
+
+printCard();
