@@ -1,57 +1,27 @@
+import '../pages/index.css';
+
+import { createCard } from "./card.js";
 import { initialCards } from "./cards.js";
 import { openModal, closeModal } from "./modal.js";
+import { enableValidation } from "./validate.js"
 
-// @todo: Темплейт карточки
 
-const cardTemplate = document.querySelector("#card-template").content; 
+
+// DOM узлы
+
+// Список карточек
 const placesList = document.querySelector(".places__list");
-
-
-// @todo: DOM узлы
-
-const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
-
-
-// @todo: Функция создания карточки
-
-function createCard(cardDataName, cardDataLink) {
-
-    const newCardElement = cardElement.cloneNode(true);
-
-    const newCardImageElement = newCardElement.querySelector(".card__image");
-    const newCardTitleElement = newCardElement.querySelector(".card__title"); 
-    const newCardLikeButtonElement = newCardElement.querySelector(".card__like-button");
-    const newDeleteButtonElement = newCardElement.querySelector(".card__delete-button");
-    const imagePopup = document.querySelector(".popup_type_image");
-
-    newCardImageElement.src = cardDataLink;
-    newCardImageElement.alt = cardDataName;
-    newCardTitleElement.textContent = cardDataName;
-
-    newCardLikeButtonElement.addEventListener("click", (evt) => {
-        evt.target.classList.toggle('card__like-button_is-active')
-    })
-
-    newDeleteButtonElement.addEventListener("click", evt => deleteCard(newDeleteButtonElement));
-
-    newCardImageElement.addEventListener("click", (evt) => {
-        imagePopup.querySelector(".popup__image").src = cardDataLink;
-        imagePopup.querySelector(".popup__caption").textContent = cardDataName;
-        openModal(imagePopup);
-    })
-
-    return newCardElement;
-}
 
 
 // Попапы
 const profilePopup = document.querySelector(".popup_type_edit");
 const cardPopup = document.querySelector(".popup_type_new-card");
+const imagePopup = document.querySelector('.popup_type_image');
+
 
 // Кнопки
 const profilePopupButton = document.querySelector(".profile__edit-button");
 const cardPopupButton = document.querySelector(".profile__add-button");
-
 
 // Обработчики событий
 profilePopupButton.addEventListener("click", (evt) => {openModal(profilePopup)});
