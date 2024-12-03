@@ -15,7 +15,7 @@ module.exports = {
         static: path.resolve(__dirname, './dist'),
         compress: true,
         port: 8020,
-        open: true
+        open: true,
     },
     module: {
         rules: [
@@ -43,7 +43,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: './src/index.html'
         }),
-        new CleanWebpackPlugin(),
+        //new CleanWebpackPlugin(),
         new MiniCssExtractPlugin(),
     ]
 }
