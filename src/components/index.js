@@ -1,4 +1,5 @@
 import { initialCards } from "./cards.js";
+import { openModal, closeModal } from "./modal.js";
 
 // @todo: Темплейт карточки
 
@@ -55,17 +56,6 @@ const cardPopupButton = document.querySelector(".profile__add-button");
 // Обработчики событий
 profilePopupButton.addEventListener("click", (evt) => {openModal(profilePopup)});
 cardPopupButton.addEventListener("click", (evt) => {openModal(cardPopup)});
-
-
-function openModal(popup) {     
-    popup.classList.add('popup_is-opened');
-    popup.querySelector(".popup__close").addEventListener("click", evt => closeModal(popup));
-
-}
-
-function closeModal(popup) {
-    popup.classList.remove('popup_is-opened')
-}
 
 // Находим форму в DOM
 const profileFormElement = profilePopup.querySelector(".popup__form");// Воспользуйтесь методом querySelector()
