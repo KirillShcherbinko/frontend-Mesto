@@ -1,16 +1,36 @@
 import '../pages/index.css';
 
 import { createCard } from "./card.js";
-import { initialCards } from "./cards.js";
 import { openModal, closeModal } from "./modal.js";
 import { enableValidation } from "./validate.js"
+import { getInitialCards, getProfile } from "./api.js";
 
+////////// Данные с сервера //////////
 
+const initialCards = await getInitialCards();
+
+const profileData = await getProfile();
+const profileName = profileData.name;
+const profileJob = profileData.about;
+const profileAvatar = profileData.avatar;
 
 ////////// DOM узлы //////////
 
+const profileTitle = document.querySelector(".profile__title");
+const profileDescription = document.querySelector(".profile__description");
+const profileImage = document.querySelector(".profile__image");
+
+
+profileTitle.textContent = profileName;
+profileDescription.textContent = profileJob;
+profileImage.style.backgroundImage = `url("${profileAvatar}")`;
+
 // Список карточек
 const placesList = document.querySelector(".places__list");
+
+initialCards.forEach(cardData => {
+    placesList.append(createCard(cardData["name"], cardData["link"]));
+})
 
 
 // Попапы
@@ -61,8 +81,8 @@ const validationSettings = {
 ////////// Обработка попапов //////////
 
 // Получение значений полей для попапа профиля
-nameInput.value = document.querySelector(".profile__title").textContent;
-jobInput.value = document.querySelector(".profile__description").textContent;
+nameInput.value = profileName;
+jobInput.value = profileJob;
 
 // Функция для обработки попапа профиля
 function handleProfileFormSubmit(evt) {
@@ -114,20 +134,6 @@ placesList.addEventListener("click", (evt) => {
     }
 })
 
-////////// Дополнительные функции //////////
-
-// Вывод карточек на страницу
-function printCard() {
-    initialCards.forEach(cardData => {
-        placesList.append(createCard(cardData["name"], cardData["link"]));
-    })
-}
-
-
-////////// Вызов функций //////////
-
-// Вывод карточек на экран
-printCard();
 
 // Включение валидации
 enableValidation(validationSettings);
