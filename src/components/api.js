@@ -8,93 +8,62 @@ const config = {
     }
 }
 
-const checkResponse = (res) => {
-  if (res.ok) return res.json()
-    return Promise.reject(`Ошибка: ${res.status}`);
+const sendRequest = (method, endpoint, body) => {
+  const options = {method, headers: config.headers};
+
+  if (method !== 'GET' && body) {
+    options.body = JSON.stringify(body);
+  }
+
+  return fetch (`${config.baseUrl}/${endpoint}`, options)
+    .then((res) => {
+      if (res.ok) return res.json()
+      return Promise.reject(`Ошибка: ${res.status}`);
+    })
 }
 
 ///////// Функции для профиля //////////
 
 // Получение данных профиля
 export const getProfile = () => {
-  return fetch(`${config.baseUrl}/users/me`, {
-    headers: config.headers
-  })
-    .then(checkResponse)
+  return sendRequest("GET", "users/me", {});
 }
 
 // Обновление данных профиля
 export const updateProfile = (name, about) => {
-  return fetch(`${config.baseUrl}/users/me`, {
-    method: "PATCH",
-    headers: config.headers,
-    body: JSON.stringify({
-      name, about
-    })
-  })
-    .then(checkResponse)
+  return sendRequest("PATCH", "users/me", {name, about});
 }
 
 // Обновление аватара пользователя
 export const updateAvatar = (avatar) => {
-  return fetch(`${config.baseUrl}/users/me/avatar`, {
-    method: "PATCH", 
-    headers: config.headers,
-    body: JSON.stringify({
-      avatar
-    })
-  })
-    .then(checkResponse)
-  }
+  return sendRequest("PATCH", "users/me/avatar", {avatar});
+}
 
 ////////// Функции для карточек //////////
 
 // Получение всех карточек
 export const getInitialCards = () => {
-  return fetch(`${config.baseUrl}/cards`, {
-    headers: config.headers
-  })
-    .then(checkResponse)
-} 
+ return sendRequest("GET", "cards", {});
+}
 
 // Создание карточки
-export const createCard = (name, link) => {
-  return fetch(`${config.baseUrl}/cards`, {
-    method: "POST",
-    headers: config.headers,
-    body: JSON.stringify({
-      name, link
-    })
-  })
-    .then(checkResponse)
+export const postCard = (name, link) => {
+  return sendRequest("POST", "cards", {name, link});
 }
 
 // Удаление карточки
 export const deleteCard = (cardId) => {
-  return fetch(`${config.baseUrl}/cards/${cardId}`, {
-    method: "DELETE",
-    headers: config.headers,
-  })
-    .then(checkResponse)
+  return sendRequest("DELETE", `cards/${cardId}`, {});
 }
 
 ////////// Функции для лайков карточек //////////
 
 // Поставить лайк
 export const putLike = (cardId) => {
-  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
-    method: "PUT",
-    headers: config.headers
-  })
-    .then(checkResponse)
+  return sendRequest("PUT", `cards/likes/${cardId}`, {});
 }
 
 // Удалить лайк
 export const deleteLike = (cardId) => {
-  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
-    method: "DELETE",
-    headers: config.headers
-  })
-    .then(checkResponse)
-  }
-
+  return sendRequest("DELETE", `cards/likes/${cardId}`, {});
+}

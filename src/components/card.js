@@ -8,6 +8,8 @@ export function createCard(cardDataName, cardDataLink) {
 
     const newCardImageElement = newCardElement.querySelector(".card__image");
     const newCardTitleElement = newCardElement.querySelector(".card__title"); 
+    const newCardLikeCount = newCardElement.querySelector("");
+    
     const newCardLikeButtonElement = newCardElement.querySelector(".card__like-button");
     const newDeleteButtonElement = newCardElement.querySelector(".card__delete-button");
 

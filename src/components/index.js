@@ -3,35 +3,16 @@ import '../pages/index.css';
 import { createCard } from "./card.js";
 import { openModal, closeModal } from "./modal.js";
 import { enableValidation } from "./validate.js"
-import { getInitialCards, getProfile } from "./api.js";
-
-////////// Данные с сервера //////////
-
-const initialCards = await getInitialCards();
-
-const profileData = await getProfile();
-const profileName = profileData.name;
-const profileJob = profileData.about;
-const profileAvatar = profileData.avatar;
+import { getInitialCards, getProfile, updateProfile, postCard } from "./api.js";
 
 ////////// DOM узлы //////////
-
-const profileTitle = document.querySelector(".profile__title");
-const profileDescription = document.querySelector(".profile__description");
-const profileImage = document.querySelector(".profile__image");
-
-
-profileTitle.textContent = profileName;
-profileDescription.textContent = profileJob;
-profileImage.style.backgroundImage = `url("${profileAvatar}")`;
 
 // Список карточек
 const placesList = document.querySelector(".places__list");
 
-initialCards.forEach(cardData => {
-    placesList.append(createCard(cardData["name"], cardData["link"]));
-})
-
+const profileTitle = document.querySelector(".profile__title");
+const profileDescription = document.querySelector(".profile__description");
+const profileImage = document.querySelector(".profile__image");
 
 // Попапы
 const profilePopup = document.querySelector(".popup_type_edit");
@@ -66,6 +47,30 @@ profilePopup.classList.add('popup_is-animated');
 cardPopup.classList.add('popup_is-animated');
 imagePopup.classList.add('popup_is-animated');
 
+////////// Данные с сервера //////////
+
+getInitialCards()
+    .then((res) => {
+        res.forEach(cardData => {
+            placesList.append(createCard(cardData["name"], cardData["link"]));
+        })
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+
+getProfile()
+    .then((res) => {
+        profileTitle.textContent = res.name;
+        profileDescription.textContent = res.about;
+        profileImage.style.backgroundImage = `url("${res.avatar}")`;
+        nameInput.value = res.name;
+        jobInput.value = res.about;
+    })
+    .catch((err) => {
+        console.log(err)
+    })
+
 ////////// Дополнительные переменные //////////
 
 // Создание объекта с настройками валидации
@@ -81,21 +86,26 @@ const validationSettings = {
 ////////// Обработка попапов //////////
 
 // Получение значений полей для попапа профиля
-nameInput.value = profileName;
-jobInput.value = profileJob;
+
 
 // Функция для обработки попапа профиля
 function handleProfileFormSubmit(evt) {
     evt.preventDefault();
 
-    const nameInputValue = nameInput.value;
-    const jobInputValue = jobInput.value;
-
     const profileTitle = document.querySelector(".profile__title");
     const profileDescription = document.querySelector(".profile__description");
 
-    profileTitle.textContent = nameInputValue;
-    profileDescription.textContent = jobInputValue;
+    updateProfile( nameInput.value, jobInput.value)
+        .then((res) => {
+            const nameInputValue = res.name;
+            const jobInputValue = res.about;
+
+            profileTitle.textContent = nameInputValue;
+            profileDescription.textContent = jobInputValue;
+        })
+        .catch((err) => {
+            console.log(err);
+        })
 
     closeModal(profilePopup);
 }
