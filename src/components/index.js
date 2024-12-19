@@ -3,7 +3,15 @@ import '../pages/index.css';
 import { createCard } from "./card.js";
 import { openModal, closeModal } from "./modal.js";
 import { enableValidation } from "./validate.js"
-import { getInitialCards, getProfile, updateProfile, postCard } from "./api.js";
+import { 
+    getInitialCards, 
+    getProfile, 
+    updateProfile, 
+    updateAvatar,
+    postCard,
+    putLike,
+    deleteLike
+} from "./api.js";
 
 ////////// DOM узлы //////////
 
@@ -17,11 +25,13 @@ const profileImage = document.querySelector(".profile__image");
 // Попапы
 const profilePopup = document.querySelector(".popup_type_edit");
 const cardPopup = document.querySelector(".popup_type_new-card");
-const imagePopup = document.querySelector('.popup_type_image');
+const imagePopup = document.querySelector(".popup_type_image");
+const avatarPopup = document.querySelector(".popup_type_avatar");
 
 // Элементы форм
 const profileFormElement = profilePopup.querySelector(".popup__form");
 const cardFromElement = cardPopup.querySelector(".popup__form");
+const avatarFormElement = avatarPopup.querySelector(".popup_form");
 
 // Элементы попапа для карточки
 // Элементы поп-апа картинки
@@ -38,26 +48,23 @@ const jobInput = profilePopup.querySelector(".popup__input_type_description");
 const cardNameInput = cardPopup.querySelector(".popup__input_type_card-name");
 const cardLinkInput = cardPopup.querySelector(".popup__input_type_url");
 
+// Для аватара
+const avatarLinkInput = avatarPopup.querySelector(".popup_input_type_url");
+
 // Кнопки
 const profilePopupButton = document.querySelector(".profile__edit-button");
 const cardPopupButton = document.querySelector(".profile__add-button");
+const profileSubmitButton = profilePopup.querySelector(".popup__button");
+const cardSubmitButton = cardPopup.querySelector(".popup__button");
 
 // Добавление анимации попапам
 profilePopup.classList.add('popup_is-animated');
 cardPopup.classList.add('popup_is-animated');
 imagePopup.classList.add('popup_is-animated');
 
-////////// Данные с сервера //////////
+////////// Получение данных с сервера //////////
 
-getInitialCards()
-    .then((res) => {
-        res.forEach(cardData => {
-            placesList.append(createCard(cardData["name"], cardData["link"]));
-        })
-    })
-    .catch((err) => {
-        console.log(err);
-    });
+export let userId;
 
 getProfile()
     .then((res) => {
@@ -66,10 +73,22 @@ getProfile()
         profileImage.style.backgroundImage = `url("${res.avatar}")`;
         nameInput.value = res.name;
         jobInput.value = res.about;
+        userId = res._id;
     })
     .catch((err) => {
         console.log(err)
     })
+
+getInitialCards()
+    .then((res) => {
+        res.forEach(cardData => {
+            const wasLiked = cardData["likes"].some(user => user["_id"] === userId);
+            placesList.append(createCard(cardData["name"], cardData["link"], cardData["likes"].length, cardData["_id"], cardData["owner"]["_id"], wasLiked));
+        })
+    })
+    .catch((err) => {
+        console.log(err);
+    });
 
 ////////// Дополнительные переменные //////////
 
@@ -95,7 +114,12 @@ function handleProfileFormSubmit(evt) {
     const profileTitle = document.querySelector(".profile__title");
     const profileDescription = document.querySelector(".profile__description");
 
-    updateProfile( nameInput.value, jobInput.value)
+    const body = {
+        name: nameInput.value,
+        about: jobInput.value
+    }
+
+    updateProfile(body)
         .then((res) => {
             const nameInputValue = res.name;
             const jobInputValue = res.about;
@@ -106,8 +130,10 @@ function handleProfileFormSubmit(evt) {
         .catch((err) => {
             console.log(err);
         })
-
-    closeModal(profilePopup);
+        .finally(() => {
+            closeModal(profilePopup);
+            profileSubmitButton.classList.add("popup__button_disabled");
+        });
 }
 
 // Функция для обработки попапа добавления карточки
@@ -117,9 +143,44 @@ function handleCardFormSubmit(evt) {
     const cardNameInputValue = cardNameInput.value;
     const cardLinkInputValue = cardLinkInput.value;
 
-    placesList.prepend(createCard(cardNameInputValue, cardLinkInputValue));
+    const body = {
+        name: cardNameInputValue,
+        link: cardLinkInputValue
+    }
 
-    closeModal(cardPopup);
+    postCard(body)
+        .then(res => {
+            const cardLikeCount = res.likes.length;
+            const cardId = res._id;
+            const ownerId = res.owner._id;
+            const wasLiked = res.likes.some(user => user._id === userId);
+            const newCard = createCard(
+                cardNameInputValue, 
+                cardLinkInputValue, 
+                cardLikeCount, 
+                cardId, 
+                ownerId, 
+                wasLiked
+            );
+            placesList.prepend(newCard);
+        })
+        .catch(err => {
+            console.log(err);
+        })
+        .finally(() => {
+            closeModal(cardPopup);
+            cardSubmitButton.classList.add("popup__button_disabled");
+        });
+}
+
+
+// Функция для обработки попапа аватара
+function handleAvatarFormSubmit(evt) {
+    evt.preventDefault();
+
+    const avatarLinkInputValue = avatarLinkInput.value;
+
+
 }
 
 

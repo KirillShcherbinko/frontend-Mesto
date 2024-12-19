@@ -30,7 +30,7 @@ export const getProfile = () => {
 }
 
 // Обновление данных профиля
-export const updateProfile = (name, about) => {
+export const updateProfile = ({name, about}) => {
   return sendRequest("PATCH", "users/me", {name, about});
 }
 
@@ -47,7 +47,7 @@ export const getInitialCards = () => {
 }
 
 // Создание карточки
-export const postCard = (name, link) => {
+export const postCard = ({name, link}) => {
   return sendRequest("POST", "cards", {name, link});
 }
 

@@ -1,7 +1,6 @@
 // Функция для вывода сообщений об ошибках
 function showInputError(formElement, inputElement, errorMessage, inputErrorClass, errorClass) {
     const errorElement = formElement.querySelector(`.${inputElement.name}-error`);
-    console.log(errorElement);
     inputElement.classList.add(inputErrorClass);
     errorElement.classList.add(errorClass);
     errorElement.textContent = errorMessage;
