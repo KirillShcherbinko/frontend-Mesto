@@ -42,6 +42,7 @@ function checkInputValidity(formElement, inputElement, inputErrorClass, errorCla
 // Функция для установки обработчиков событий
 function setEventListeners(formElement, validationSettings) {
     const inputList = Array.from(formElement.querySelectorAll(validationSettings.inputSelector));
+    console.log(inputList);
     const buttonElement = formElement.querySelector(validationSettings.submitButtonSelector);
     toggleButtonState(inputList, buttonElement, validationSettings.inactiveButtonClass);
 

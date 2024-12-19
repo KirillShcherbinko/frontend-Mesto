@@ -31,7 +31,11 @@ export function createCard(
 
     if (wasLiked) {
         newCardLikeButtonElement.classList.add("card__like-button_is-active");
+    } else {
+        newCardLikeButtonElement.classList.remove("card__like-button_is-active");
     }
+
+    console.log(wasLiked);
 
     newCardLikeButtonElement.addEventListener("click", (evt) => {
         const likeButton = evt.target;

@@ -9,8 +9,6 @@ import {
     updateProfile, 
     updateAvatar,
     postCard,
-    putLike,
-    deleteLike
 } from "./api.js";
 
 ////////// DOM узлы //////////
@@ -18,6 +16,10 @@ import {
 // Список карточек
 const placesList = document.querySelector(".places__list");
 
+// Ававтар
+const avatarElement = document.querySelector(".profile__overlay");
+
+// Данные пользователя
 const profileTitle = document.querySelector(".profile__title");
 const profileDescription = document.querySelector(".profile__description");
 const profileImage = document.querySelector(".profile__image");
@@ -30,8 +32,8 @@ const avatarPopup = document.querySelector(".popup_type_avatar");
 
 // Элементы форм
 const profileFormElement = profilePopup.querySelector(".popup__form");
-const cardFromElement = cardPopup.querySelector(".popup__form");
-const avatarFormElement = avatarPopup.querySelector(".popup_form");
+const cardFormElement = cardPopup.querySelector(".popup__form");
+const avatarFormElement = avatarPopup.querySelector(".popup__form");
 
 // Элементы попапа для карточки
 // Элементы поп-апа картинки
@@ -49,13 +51,17 @@ const cardNameInput = cardPopup.querySelector(".popup__input_type_card-name");
 const cardLinkInput = cardPopup.querySelector(".popup__input_type_url");
 
 // Для аватара
-const avatarLinkInput = avatarPopup.querySelector(".popup_input_type_url");
+const avatarLinkInput = avatarPopup.querySelector(".popup__input_type_url");
 
 // Кнопки
+// Кнопки для открытия модальных окон
 const profilePopupButton = document.querySelector(".profile__edit-button");
 const cardPopupButton = document.querySelector(".profile__add-button");
+
+// Кнопки для отправки
 const profileSubmitButton = profilePopup.querySelector(".popup__button");
 const cardSubmitButton = cardPopup.querySelector(".popup__button");
+const avatarSubmitButton = avatarPopup.querySelector(".popup__button");
 
 // Добавление анимации попапам
 profilePopup.classList.add('popup_is-animated');
@@ -73,6 +79,7 @@ getProfile()
         profileImage.style.backgroundImage = `url("${res.avatar}")`;
         nameInput.value = res.name;
         jobInput.value = res.about;
+        avatarLinkInput.value = res.avatar;
         userId = res._id;
     })
     .catch((err) => {
@@ -83,7 +90,14 @@ getInitialCards()
     .then((res) => {
         res.forEach(cardData => {
             const wasLiked = cardData["likes"].some(user => user["_id"] === userId);
-            placesList.append(createCard(cardData["name"], cardData["link"], cardData["likes"].length, cardData["_id"], cardData["owner"]["_id"], wasLiked));
+            placesList.append(createCard(
+                cardData["name"], 
+                cardData["link"], 
+                cardData["likes"].length, 
+                cardData["_id"], 
+                cardData["owner"]["_id"], 
+                wasLiked
+            ));
         })
     })
     .catch((err) => {
@@ -153,7 +167,7 @@ function handleCardFormSubmit(evt) {
             const cardLikeCount = res.likes.length;
             const cardId = res._id;
             const ownerId = res.owner._id;
-            const wasLiked = res.likes.some(user => user._id === userId);
+            const wasLiked = false;
             const newCard = createCard(
                 cardNameInputValue, 
                 cardLinkInputValue, 
@@ -180,7 +194,18 @@ function handleAvatarFormSubmit(evt) {
 
     const avatarLinkInputValue = avatarLinkInput.value;
 
-
+    updateAvatar(avatarLinkInputValue)
+        .then(res => {
+            avatarLinkInput.textContent = res.avatar;
+            profileImage.style.backgroundImage = `url("${res.avatar}")`;
+        })
+        .catch(err => {
+            console.log(err);
+        })
+        .finally(() => {
+            closeModal(avatarPopup);
+            avatarSubmitButton.classList.add("popup__button_disabled");
+        });
 }
 
 
@@ -189,11 +214,13 @@ function handleAvatarFormSubmit(evt) {
 // Обработчики событий для попапов
 profilePopupButton.addEventListener("click", (evt) => {openModal(profilePopup)});
 cardPopupButton.addEventListener("click", (evt) => {openModal(cardPopup)});
+avatarElement.addEventListener("click", (evt) => {openModal(avatarPopup)});
 
 
 // Обработчики события для форм
 profileFormElement.addEventListener("submit", handleProfileFormSubmit);
-cardFromElement.addEventListener("submit", handleCardFormSubmit)
+cardFormElement.addEventListener("submit", handleCardFormSubmit);
+avatarFormElement.addEventListener("submit", handleAvatarFormSubmit);
 
 // Обработчик открытия карточки 
 placesList.addEventListener("click", (evt) => {
