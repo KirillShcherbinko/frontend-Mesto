@@ -133,6 +133,8 @@ function handleProfileFormSubmit(evt) {
         about: jobInput.value
     }
 
+    profileSubmitButton.textContent = "Сохранение...";
+
     updateProfile(body)
         .then((res) => {
             const nameInputValue = res.name;
@@ -147,6 +149,7 @@ function handleProfileFormSubmit(evt) {
         .finally(() => {
             closeModal(profilePopup);
             profileSubmitButton.classList.add("popup__button_disabled");
+            profileSubmitButton.textContent = "Сохранить";
         });
 }
 
@@ -161,6 +164,8 @@ function handleCardFormSubmit(evt) {
         name: cardNameInputValue,
         link: cardLinkInputValue
     }
+
+    cardSubmitButton.textContent = "Создание...";
 
     postCard(body)
         .then(res => {
@@ -184,6 +189,7 @@ function handleCardFormSubmit(evt) {
         .finally(() => {
             closeModal(cardPopup);
             cardSubmitButton.classList.add("popup__button_disabled");
+            cardSubmitButton.textContent = "Создать";
         });
 }
 
@@ -193,6 +199,8 @@ function handleAvatarFormSubmit(evt) {
     evt.preventDefault();
 
     const avatarLinkInputValue = avatarLinkInput.value;
+
+    avatarSubmitButton.textContent = "Сохранение...";
 
     updateAvatar(avatarLinkInputValue)
         .then(res => {
@@ -205,6 +213,7 @@ function handleAvatarFormSubmit(evt) {
         .finally(() => {
             closeModal(avatarPopup);
             avatarSubmitButton.classList.add("popup__button_disabled");
+            avatarSubmitButton.textContent = "Сохранить";
         });
 }
 
